@@ -365,93 +365,106 @@ drop table vendas, cliente
 -- =============== QUESTÃO 19, 20 =============== --
 /*=========================================================================================================================================================*/
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Cliente')
-CREATE TABLE Cliente (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Pessoas')
+CREATE TABLE Pessoas (
 	Id int identity(1,1),
 	Nome varchar(100) not null,
-	EnderecoId int not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Funcionario')
-CREATE TABLE Funcionario (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Clientes')
+CREATE TABLE Clientes (
 	Id int identity(1,1),
 	Nome varchar(100) not null,
-	EnderecoId int not null,
+	PessoaId int not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Usuario')
-CREATE TABLE Usuario (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Usuarios')
+CREATE TABLE Usuarios (
 	Id int identity(1,1),
 	Nome varchar(100) not null,
-	EnderecoId int not null,
+	PessoaId int not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Fornecedor')
-CREATE TABLE Fornecedor (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Funcionarios')
+CREATE TABLE Funcionarios (
 	Id int identity(1,1),
 	Nome varchar(100) not null,
-	EnderecoId int not null,
+	PessoaId int not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'TipoEndereco')
-CREATE TABLE TipoEndereco (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Fornecedores')
+CREATE TABLE Fornecedores (
+	Id int identity(1,1),
+	Nome varchar(100) not null,
+	PessoaId int not null,
+	PRIMARY KEY (Id)
+)
+GO
+
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'TiposEnderecos')
+CREATE TABLE TiposEnderecos (
 	Id int identity(1,1),
 	Descricao varchar(100) not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Endereco')
-CREATE TABLE Endereco (
+IF NOT EXISTS (SELECT 1 FROM SYS.TABLES WHERE NAME = 'Enderecos')
+CREATE TABLE Enderecos (
 	Id int identity(1,1),
 	Endereco varchar(100) not null,
 	Cidade varchar(100) null,
 	Estado varchar(100) null,
+	PessoaId int not null,
 	TipoEnderecoId int not null,
 	PRIMARY KEY (Id)
 )
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Cliente_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Cliente'))
-	ALTER TABLE Cliente ADD CONSTRAINT FK_Cliente_Endereco FOREIGN KEY (EnderecoId) REFERENCES Endereco (Id)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Cliente_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Clientes'))
+	ALTER TABLE Clientes ADD CONSTRAINT FK_Cliente_Endereco FOREIGN KEY (PessoaId) REFERENCES Pessoas (Id)
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Funcionario_endereco') AND parent_object_id = OBJECT_ID(N'dbo.Funcionario'))
-	ALTER TABLE Funcionario ADD CONSTRAINT FK_Funcionario_endereco FOREIGN KEY (EnderecoId) REFERENCES Endereco (Id)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Funcionario_endereco') AND parent_object_id = OBJECT_ID(N'dbo.Funcionarios'))
+	ALTER TABLE Funcionarios ADD CONSTRAINT FK_Funcionario_endereco FOREIGN KEY (PessoaId) REFERENCES Pessoas (Id)
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Usuario_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Usuario'))
-	ALTER TABLE Usuario ADD CONSTRAINT FK_Usuario_Endereco FOREIGN KEY (EnderecoId) REFERENCES Endereco (Id)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Usuario_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Usuarios'))
+	ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuario_Endereco FOREIGN KEY (PessoaId) REFERENCES Pessoas (Id)
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Fornecedor_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Fornecedor'))
-	ALTER TABLE Fornecedor ADD CONSTRAINT FK_Fornecedor_Endereco FOREIGN KEY (EnderecoId) REFERENCES Endereco (Id)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Fornecedor_Endereco') AND parent_object_id = OBJECT_ID(N'dbo.Fornecedores'))
+	ALTER TABLE Fornecedores ADD CONSTRAINT FK_Fornecedor_Endereco FOREIGN KEY (PessoaId) REFERENCES Pessoas (Id)
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Endereco_TipoEndereco') AND parent_object_id = OBJECT_ID(N'dbo.Endereco'))
-	ALTER TABLE Endereco ADD CONSTRAINT FK_Endereco_TipoEndereco FOREIGN KEY (TipoEnderecoId) REFERENCES TipoEndereco (Id)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Endereco_TipoEndereco') AND parent_object_id = OBJECT_ID(N'dbo.Enderecos'))
+	ALTER TABLE Enderecos ADD CONSTRAINT FK_Endereco_TipoEndereco FOREIGN KEY (TipoEnderecoId) REFERENCES TiposEnderecos (Id)
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Cliente_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Cliente'))
-	CREATE INDEX IX_Cliente_Endereco ON Cliente (Id, EnderecoId)
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'dbo.FK_Endereco_Pessoa') AND parent_object_id = OBJECT_ID(N'dbo.Enderecos'))
+	ALTER TABLE Enderecos ADD CONSTRAINT FK_Endereco_Pessoa FOREIGN KEY (PessoaId) REFERENCES Pessoas (Id)
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Funcionario_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Funcionario'))
-	CREATE INDEX IX_Funcionario_Endereco ON Funcionario (Id, EnderecoId)
+IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Cliente_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Clientes'))
+	CREATE INDEX IX_Cliente_Endereco ON Clientes (Id, PessoaId)
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Usuario_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Usuario'))
-	CREATE INDEX IX_Usuario_Endereco ON Usuario (Id, EnderecoId)
+IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Funcionario_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Funcionarios'))
+	CREATE INDEX IX_Funcionario_Endereco ON Funcionarios (Id, PessoaId)
 GO
 
-IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Fornecedor_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Fornecedor'))
-	CREATE INDEX IX_Fornecedor_Endereco ON Fornecedor (Id, EnderecoId)
+IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Usuario_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Usuarios'))
+	CREATE INDEX IX_Usuario_Endereco ON Usuarios (Id, PessoaId)
+GO
+
+IF NOT EXISTS (SELECT 1 FROM SYS.INDEXES WHERE NAME = 'IX_Fornecedor_Endereco' AND OBJECT_ID = OBJECT_ID('DBO.Fornecedores'))
+	CREATE INDEX IX_Fornecedor_Endereco ON Fornecedores (Id, PessoaId)
 GO
